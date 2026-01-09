@@ -131,7 +131,7 @@ with tab_photo:
             with c1:
                 date_v = st.date_input("Date *", value=datetime.now())
                 heure_v = st.time_input("Heure *", value=datetime.now())
-                id_p = st.number_input("ID plante (1-20) *", 1, 20, value=None, step=)
+                id_p = st.number_input("ID plante (1-20) *", 1, 20, value=None, step=1)
             with c2:
                 c_in = st.number_input("CO2 in (ppm) *", value=None, step=1)
                 c_out = st.number_input("CO2 out (ppm) *", value=None, step=1)
