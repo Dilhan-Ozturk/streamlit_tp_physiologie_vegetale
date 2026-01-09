@@ -60,7 +60,7 @@ with tab_eau:
             rang = st.selectbox("Rang feuille (#) *", options_rang, index=None, placeholder="Choisir...")
         with c2:
             etat = st.selectbox("Etat feuille *", ["Bien développée", "Jeune", "Vieille"], index=None, placeholder="Choisir...")
-            pos = st.selectbox("Position limbre *", ["Base", "Milieu", "Pointe"], index=None, placeholder="Choisir...")
+            pos = st.selectbox("Position limbe *", ["Base", "Milieu", "Pointe"], index=None, placeholder="Choisir...")
             face = st.selectbox("Face *", ["Abaxiale", "Adaxiale"], index=None, placeholder="Choisir...")
         with c3:
             cond = st.number_input("Conductance (mmol/m².s) *", format="%.2f", value=None)
