@@ -1,5 +1,7 @@
 import streamlit as st
 from streamlit_gsheets import GSheetsConnection
+import gspread
+from google.oauth2.service_account import Credentials
 import pandas as pd
 from datetime import datetime
 
@@ -12,21 +14,42 @@ conn = st.connection("gsheets", type=GSheetsConnection)
 # --- FONCTION : SAUVEGARDE ---
 def save_data(spreadsheet_key, new_row_dict):
     try:
-        url = st.secrets["connections"]["gsheets"][spreadsheet_key]
+        # 1. Configuration des credentials à partir des secrets Streamlit
+        sks = st.secrets["connections"]["gsheets"]
         
-        # Accès direct au client gspread
-        client = conn._instance.client
-        sheet = client.open_by_url(url).sheet1 # Ouvre le premier onglet
+        credentials_dict = {
+            "type": "service_account",
+            "project_id": sks["project_id"],
+            "private_key_id": sks["private_key_id"],
+            "private_key": sks["private_key"],
+            "client_email": sks["client_email"],
+            "client_id": sks["client_id"],
+            "auth_uri": sks["auth_uri"],
+            "token_uri": "https://oauth2.googleapis.com/token",
+            "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+            "client_x509_cert_url": sks.get("client_x509_cert_url") # optionnel selon votre JSON
+        }
+
+        # 2. Authentification avec gspread
+        scopes = ["https://www.googleapis.com/auth/spreadsheets"]
+        creds = Credentials.from_service_account_info(credentials_dict, scopes=scopes)
+        client = gspread.authorize(creds)
         
-        # On transforme le dictionnaire en liste de valeurs
-        # Note : On s'assure que l'ordre correspond aux colonnes du fichier
+        # 3. Ouverture du fichier et ajout de la ligne
+        url = sks[spreadsheet_key]
+        sheet = client.open_by_url(url).sheet1
+        
+        # Transformer le dictionnaire en liste de valeurs
         values = list(new_row_dict.values())
         
+        # L'opération magique qui ne supprime rien : append_row
         sheet.append_row(values)
-        st.toast("Données enregistrées avec succès !")
+        
+        st.toast("Données enregistrées !", icon="✅")
+        
     except Exception as e:
         st.error(f"Erreur lors de l'enregistrement : {e}")
-
+        
 # --- FONCTION : VISUALISATION ---
 def visualiser_donnees(spreadsheet_key, label):
     try:
