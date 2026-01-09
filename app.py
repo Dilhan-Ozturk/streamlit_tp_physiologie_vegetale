@@ -4,6 +4,9 @@ import gspread
 from google.oauth2.service_account import Credentials
 import pandas as pd
 from datetime import datetime
+import pytz
+
+time_zone = pytz.timezone('Europe/Brussels')
 
 # Configuration de la page
 st.set_page_config(page_title="Collecte des données - Travaux pratiques physiologie végétale", layout="wide")
@@ -72,7 +75,7 @@ def visualiser_donnees(spreadsheet_key, label):
             st.download_button(
                 label="📥 Télécharger en format CSV",
                 data=csv,
-                file_name=f"export_{label.replace(' ', '_').lower()}_{datetime.now().strftime('%d_%m_%Y')}.csv",
+                file_name=f"export_{label.replace(' ', '_').lower()}_{datetime.now(time_zone).strftime('%d_%m_%Y')}.csv",
                 mime='text/csv',
                 key=f"btn_{spreadsheet_key}"
             )
@@ -100,8 +103,8 @@ with tab_eau:
     with st.form("form_eau", clear_on_submit=True):
         c1, c2, c3 = st.columns(3)
         with c1:
-            date_v = st.date_input("Date *", value=datetime.now())
-            heure_v = st.time_input("Heure *", value=datetime.now())
+            date_v = st.date_input("Date *", format="DD/MM/YYYY", value=datetime.now(time_zone))
+            heure_v = st.time_input("Heure *", value=datetime.now(time_zone))
             options_rang = ["1-2", "3-4", "5-6", "7-8", "9-10", "11-12", "13-14", "15-16", "17-18", "19-20", "21-22", "23-24"]
             rang = st.selectbox("Rang feuille (#) *", options_rang, index=None, placeholder="Choisir...")
         with c2:
@@ -147,8 +150,8 @@ with tab_photo:
         with st.form("form_irga", clear_on_submit=True):
             c1, c2, c3, c4 = st.columns(4)
             with c1:
-                date_v = st.date_input("Date *", value=datetime.now())
-                heure_v = st.time_input("Heure *", value=datetime.now())
+                date_v = st.date_input("Date *", format="DD/MM/YYYY", value=datetime.now(time_zone))
+                heure_v = st.time_input("Heure *", value=datetime.now(time_zone))
                 id_p = st.number_input("ID plante (1-20) *", 1, 20, value=None, step=1)
             with c2:
                 c_in = st.number_input("CO2 in (ppm) *", value=None, step=1)
@@ -186,8 +189,8 @@ with tab_photo:
         with st.form("form_poro", clear_on_submit=True):
             c1, c2 = st.columns(2)
             with c1:
-                date_v = st.date_input("Date *", value=datetime.now())
-                heure_v = st.time_input("Heure *", value=datetime.now())
+                date_v = st.date_input("Date *", format="DD/MM/YYYY", value=datetime.now(time_zone))
+                heure_v = st.time_input("Heure *", value=datetime.now(time_zone))
                 id_p = st.number_input("ID plante (1-20) *", 1, 20, value=None, step=1)
             with c2:
                 gs = st.number_input("Gs (µmol eau/m².s) *", value=None, step=0.1)
@@ -214,8 +217,8 @@ with tab_photo:
         with st.form("form_croissance", clear_on_submit=True):
             c1, c2 = st.columns(2)
             with c1:
-                date_v = st.date_input("Date *", value=datetime.now())
-                heure_v = st.time_input("Heure *", value=datetime.now())
+                date_v = st.date_input("Date *", format="DD/MM/YYYY", value=datetime.now(time_zone))
+                heure_v = st.time_input("Heure *", value=datetime.now(time_zone))
                 id_p = st.number_input("ID plante (1-20) *", 1, 20, value=None, step=1)
             with c2:
                 h_tige = st.number_input("Hauteur tige (cm) *", value=None, step=0.1)
@@ -240,8 +243,8 @@ with tab_photo:
         with st.form("form_fluo", clear_on_submit=True):
             c1, c2 = st.columns(2)
             with c1:
-                date_v = st.date_input("Date *", value=datetime.now())
-                heure_v = st.time_input("Heure *", value=datetime.now())
+                date_v = st.date_input("Date *", format="DD/MM/YYYY", value=datetime.now(time_zone))
+                heure_v = st.time_input("Heure *", value=datetime.now(time_zone))
                 id_p = st.number_input("ID plante (1-20) *", 1, 20, value=None, step=1)
                 trait = st.selectbox("Traitement *", ["Lumière", "Ombre"], index=None)
             with c2:
