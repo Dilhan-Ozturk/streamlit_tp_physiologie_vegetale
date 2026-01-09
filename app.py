@@ -105,7 +105,7 @@ with tab_eau:
                     "Date (jj/mm/yyyy)": date_v.strftime("%d/%m/%Y"),
                     "Heure (hh:mm)": heure_v.strftime("%H:%M"),
                     "Rang feuille (#)": rang, "Etat feuille": etat,
-                    "Position sur le limbre (Base-milieu-pointe)": pos,
+                    "Position sur le limbe (Base-milieu-pointe)": pos,
                     "Face (Abaxiale-Adaxiale)": face,
                     "Conductance stomatique (mmol/m².s)": cond,
                     "PAR (µmol/m².s)": par, "Remarque": remarque
