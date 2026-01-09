@@ -6,7 +6,7 @@ Application streamlit pour les travaux pratiques de physiologie vegetale
   - Encoder une nouvelle entrée dans la table
   - Télécharger la table sous format csv
 
-A travers l'API google, l'application affiche et édite 5 fichier se trouvant sur un google Drive.
+A travers l'API google drive, l'application affiche et édite 5 fichier se trouvant sur un google Drive.
 Les fichiers concernés sont :
   - Pour la séance sur l'eau :
     1. Mesure sur le poromètre
