@@ -50,24 +50,42 @@ def save_data(spreadsheet_key, new_row_dict):
     except Exception as e:
         st.error(f"Erreur lors de l'enregistrement : {e}")
 
-# --- FONCTION : VISUALISATION ---
+# --- FONCTION : VISUALISATION & TÉLÉCHARGEMENT ---
 def visualiser_donnees(spreadsheet_key, label):
     try:
         url = st.secrets["connections"]["gsheets"][spreadsheet_key]
         df = conn.read(spreadsheet=url, ttl=0)
-        
+
         st.write(f"### Historique : {label}")
-        col_check, _ = st.columns([1, 2])
-        with col_check:
+        
+        # Création de deux colonnes pour les options et le téléchargement
+        col_opts, col_dl = st.columns([2, 1])
+        
+        with col_opts:
             tout_afficher = st.checkbox(f"Afficher tout l'historique ({len(df)} lignes)", key=f"check_{spreadsheet_key}")
         
+        with col_dl:
+            # Préparation du fichier CSV pour le téléchargement
+            # on utilise utf-8-sig pour que les accents s'affichent bien dans Excel
+            csv = df.to_csv(index=False).encode('utf-8-sig')
+            
+            st.download_button(
+                label="📥 Télécharger en format CSV",
+                data=csv,
+                file_name=f"export_{label.replace(' ', '_').lower()}_{datetime.now().strftime('%d_%m_%Y')}.csv",
+                mime='text/csv',
+                key=f"btn_{spreadsheet_key}"
+            )
+
         if tout_afficher:
             st.dataframe(df, use_container_width=True)
         else:
             st.dataframe(df.tail(10), use_container_width=True)
             st.caption("Affichage des 10 dernières entrées.")
-    except:
-        st.warning(f"Impossible de charger les données pour {label}. Vérifiez l'URL et les accès.")
+            
+    except Exception as e:
+        st.warning(f"Impossible de charger les données pour {label}. Vérifiez l'URL et les accès. Erreur: {e}")
+
 
 # --- INTERFACE PRINCIPALE ---
 st.title("Collecte des données - Travaux pratiques physiologie végétale")
