@@ -49,7 +49,7 @@ def save_data(spreadsheet_key, new_row_dict):
         
     except Exception as e:
         st.error(f"Erreur lors de l'enregistrement : {e}")
-        
+
 # --- FONCTION : VISUALISATION ---
 def visualiser_donnees(spreadsheet_key, label):
     try:
@@ -91,8 +91,8 @@ with tab_eau:
             pos = st.selectbox("Position limbe *", ["Base", "Milieu", "Pointe"], index=None, placeholder="Choisir...")
             face = st.selectbox("Face *", ["Abaxiale", "Adaxiale"], index=None, placeholder="Choisir...")
         with c3:
-            cond = st.number_input("Conductance (mmol/m².s) *", format="%.2f", value=None)
-            par = st.number_input("PAR (µmol/m².s)", format="%.1f", value=None)
+            cond = st.number_input("Conductance (mmol/m².s) *", format="%.2f", value=None, step=0.01)
+            par = st.number_input("PAR (µmol/m².s)", format="%.2f", value=None, step=0.01)
         
         remarque = st.text_area("Remarque", key="rem_eau")
         submit = st.form_submit_button("Enregistrer Mesure Eau")
@@ -131,20 +131,20 @@ with tab_photo:
             with c1:
                 date_v = st.date_input("Date *", value=datetime.now())
                 heure_v = st.time_input("Heure *", value=datetime.now())
-                id_p = st.number_input("ID plante (1-20) *", 1, 20, value=None)
+                id_p = st.number_input("ID plante (1-20) *", 1, 20, value=None, step=)
             with c2:
-                c_in = st.number_input("CO2 in (ppm) *", value=None)
-                c_out = st.number_input("CO2 out (ppm) *", value=None)
-                h_in = st.number_input("H2O in (mbar) *", value=None)
-                h_out = st.number_input("H2O out (mbar) *", value=None)
+                c_in = st.number_input("CO2 in (ppm) *", value=None, step=1)
+                c_out = st.number_input("CO2 out (ppm) *", value=None, step=1)
+                h_in = st.number_input("H2O in (mbar) *", value=None, step=0.1)
+                h_out = st.number_input("H2O out (mbar) *", value=None, step=0.1)
             with c3:
-                qleaf = st.number_input("PAR (Qleaf) (µmol/m².s) *", value=None)
-                pres = st.number_input("Pression (bar) *", value=None)
-                temp = st.number_input("Température (°C) *", value=None)
-                flux = st.number_input("Flux d'air (U) (µmol/s) *", value=None)
+                qleaf = st.number_input("PAR (Qleaf) (µmol/m².s) *", value=None, step=0.01)
+                pres = st.number_input("Pression (bar) *", value=None, step=0.01)
+                temp = st.number_input("Température (°C) *", value=None, step=0.1)
+                flux = st.number_input("Flux d'air (U) (µmol/s) *", value=None, step=0.01)
             with c4:
-                a_val = st.number_input("A (µmol/m².s) *", value=None)
-                e_val = st.number_input("E (mmol/m².s) *", value=None)
+                a_val = st.number_input("A (µmol/m².s) *", value=None, step=0.01)
+                e_val = st.number_input("E (mmol/m².s) *", value=None, step=0.01)
                 trait = st.selectbox("Traitement *", ["Lumière", "Ombre"], index=None)
             
             remarque = st.text_area("Remarque", key="rem_irga")
@@ -170,10 +170,10 @@ with tab_photo:
             with c1:
                 date_v = st.date_input("Date *", value=datetime.now())
                 heure_v = st.time_input("Heure *", value=datetime.now())
-                id_p = st.number_input("ID plante (1-20) *", 1, 20, value=None)
+                id_p = st.number_input("ID plante (1-20) *", 1, 20, value=None, step=1)
             with c2:
-                gs = st.number_input("Gs (µmol eau/m².s) *", value=None)
-                par = st.number_input("PAR (µmol de photons/m².s) *", value=None)
+                gs = st.number_input("Gs (µmol eau/m².s) *", value=None, step=0.1)
+                par = st.number_input("PAR (µmol de photons/m².s) *", value=None, step=0.01)
                 app = st.selectbox("Appareil *", ["Lent", "Rapide"], index=None)
                 trait = st.selectbox("Traitement *", ["Lumière", "Ombre"], index=None)
             
@@ -198,9 +198,9 @@ with tab_photo:
             with c1:
                 date_v = st.date_input("Date *", value=datetime.now())
                 heure_v = st.time_input("Heure *", value=datetime.now())
-                id_p = st.number_input("ID plante (1-20) *", 1, 20, value=None)
+                id_p = st.number_input("ID plante (1-20) *", 1, 20, value=None, step=1)
             with c2:
-                h_tige = st.number_input("Hauteur tige (cm) *", value=None)
+                h_tige = st.number_input("Hauteur tige (cm) *", value=None, step=0.1)
                 n_feuilles = st.number_input("Nombre feuilles *", step=1, value=None)
                 trait = st.selectbox("Traitement *", ["Lumière", "Ombre"], index=None)
             
@@ -224,14 +224,14 @@ with tab_photo:
             with c1:
                 date_v = st.date_input("Date *", value=datetime.now())
                 heure_v = st.time_input("Heure *", value=datetime.now())
-                id_p = st.number_input("ID plante (1-20) *", 1, 20, value=None)
+                id_p = st.number_input("ID plante (1-20) *", 1, 20, value=None, step=1)
                 trait = st.selectbox("Traitement *", ["Lumière", "Ombre"], index=None)
             with c2:
-                y_ii = st.number_input("Y_II *", format="%.4f", value=None)
-                fv_fm = st.number_input("Fv/Fm", format="%.4f", value=None)
-                y_npq = st.number_input("Y(NPQ)", format="%.4f", value=None)
-                y_no = st.number_input("Y(NO)", format="%.4f", value=None)
-                a_par = st.number_input("Actinic PAR", value=None)
+                y_ii = st.number_input("Y_II *", format="%.3f", value=None, step=0.001)
+                fv_fm = st.number_input("Fv/Fm", format="%.3f", value=None, step=0.001)
+                y_npq = st.number_input("Y(NPQ)", format="%.3f", value=None, step=0.001)
+                y_no = st.number_input("Y(NO)", format="%.3f", value=None, step=0.001)
+                a_par = st.number_input("Actinic PAR", value=None, step=1)
             
             remarque = st.text_area("Remarque", key="rem_fluo")
             if st.form_submit_button("Enregistrer Fluorimètre"):
