@@ -13,12 +13,17 @@ conn = st.connection("gsheets", type=GSheetsConnection)
 def save_data(spreadsheet_key, new_row_dict):
     try:
         url = st.secrets["connections"]["gsheets"][spreadsheet_key]
-        # Lecture avec cache désactivé pour avoir le dernier état
-        existing_df = conn.read(spreadsheet=url, ttl=0)
-        new_df = pd.concat([existing_df, pd.DataFrame([new_row_dict])], ignore_index=True)
-        conn.update(spreadsheet=url, data=new_df)
-        st.success("Données enregistrées !")
-        st.balloons()
+        
+        # Accès direct au client gspread
+        client = conn._instance.client
+        sheet = client.open_by_url(url).sheet1 # Ouvre le premier onglet
+        
+        # On transforme le dictionnaire en liste de valeurs
+        # Note : On s'assure que l'ordre correspond aux colonnes du fichier
+        values = list(new_row_dict.values())
+        
+        sheet.append_row(values)
+        st.toast("Données enregistrées avec succès !")
     except Exception as e:
         st.error(f"Erreur lors de l'enregistrement : {e}")
 
@@ -60,7 +65,7 @@ with tab_eau:
             rang = st.selectbox("Rang feuille (#) *", options_rang, index=None, placeholder="Choisir...")
         with c2:
             etat = st.selectbox("Etat feuille *", ["Bien développée", "Jeune", "Vieille"], index=None, placeholder="Choisir...")
-            pos = st.selectbox("Position limbre *", ["Base", "Milieu", "Pointe"], index=None, placeholder="Choisir...")
+            pos = st.selectbox("Position limbe *", ["Base", "Milieu", "Pointe"], index=None, placeholder="Choisir...")
             face = st.selectbox("Face *", ["Abaxiale", "Adaxiale"], index=None, placeholder="Choisir...")
         with c3:
             cond = st.number_input("Conductance (mmol/m².s) *", format="%.2f", value=None)
