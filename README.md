@@ -15,3 +15,8 @@ Les fichiers concernés sont :
     2. Mesure sur le poromètre
     3. Mesure sur la croissance
     4. Mesure sur le fluorimètre
+  - Pour les tournesols :
+    1. Encodage de l'identifiant
+    2. Encodage des caractéristiques de la pièce
+    3. Encodage des observations sur la plante
+    4. Encodage des observations sur les feuilles
