@@ -64,7 +64,7 @@ def show_data(spreadsheet_key, label):
         url = st.secrets["connections"]["gsheets"][spreadsheet_key]
         df = conn.read(spreadsheet=url, ttl=0)
 
-        st.write(f"### Historique : {label}")
+        st.write("### Historique")
         
         # Création de deux colonnes pour les options et le téléchargement
         col_opts, col_dl_csv, col_dl_excel = st.columns([1, 1, 1])
@@ -100,9 +100,9 @@ def show_data(spreadsheet_key, label):
                 )
 
         if tout_afficher:
-            st.dataframe(df, use_container_width=True)
+            st.dataframe(df, width="stretch")
         else:
-            st.dataframe(df.tail(10), use_container_width=True)
+            st.dataframe(df.tail(10), width="stretch")
             st.caption("Affichage des 10 dernières entrées.")
             
     except Exception as e:
@@ -115,6 +115,8 @@ st.title(TITLE)
 HEADER_TP_EAU = "TP1 : l'eau"
 HEADER_TP_PHOTOSYNTHESE = "TP5 : la photosynthèse"
 HEADER_TP_TOURNESOL = "Votre tournesol"
+
+MANDATORY_FIELDS_MISSING = "Veuillez remplir tous les champs obligatoires marqués d'un *"
 
 tab_eau, tab_photo, tab_tournesol = st.tabs([HEADER_TP_EAU,
                                              HEADER_TP_PHOTOSYNTHESE,
@@ -148,7 +150,7 @@ with tab_eau:
 
         if submit:
             if any(v is None for v in [rang, etat, pos, face, cond]):
-                st.error("Veuillez remplir tous les champs obligatoires (*)")
+                st.error(MANDATORY_FIELDS_MISSING)
             else:
                 new_row = {
                     "date": date_v.strftime("%d/%m/%Y"),
@@ -211,7 +213,7 @@ with tab_photo:
             if st.form_submit_button("Enregistrer"):
                 check_list = [id_p, c_in, c_out, h_in, h_out, qleaf, pres, temp, flux, a_val, e_val, trait]
                 if any(v is None for v in check_list):
-                    st.error("Champs obligatoires manquants")
+                    st.error(MANDATORY_FIELDS_MISSING)
                 else:
                     new_row = {
                         "date": date_v.strftime("%d/%m/%Y"),
@@ -257,7 +259,7 @@ with tab_photo:
 
             if st.form_submit_button("Enregistrer"):
                 if any(v is None for v in [id_p, gs, par, app, trait]):
-                    st.error("Champs manquants")
+                    st.error(MANDATORY_FIELDS_MISSING)
                 else:
                     new_row = {
                         "date": date_v.strftime("%d/%m/%Y"),
@@ -295,7 +297,7 @@ with tab_photo:
 
             if st.form_submit_button("Enregistrer"):
                 if any(v is None for v in [id_p, h_tige, n_feuilles, trait]):
-                    st.error("Champs manquants")
+                    st.error(MANDATORY_FIELDS_MISSING)
                 else:
                     new_row = {
                         "date": date_v.strftime("%d/%m/%Y"),
@@ -335,7 +337,7 @@ with tab_photo:
 
             if st.form_submit_button("Enregistrer"):
                 if any(v is None for v in [id_p, trait, y_ii]):
-                    st.error("Champs manquants")
+                    st.error(MANDATORY_FIELDS_MISSING)
                 else:
                     new_row = {
                         "date": date_v.strftime("%d/%m/%Y"),
@@ -353,3 +355,231 @@ with tab_photo:
                     save_data("url_fluo", new_row)
 
         show_data("url_fluo", "fluorimètre")
+
+with tab_tournesol:
+    st.header(HEADER_TP_TOURNESOL)
+
+    st.markdown('''
+        Pour étudier l'influence de l'environnement sur la croissance et le développement des plantes, vous allez
+        observer un tournesol :sunflower:. Vous recevrez votre tournesol lors du **TP1** (en S2 ou S3) et l'observerez
+        jusqu'en S11. Au **TP8** (en S12), nous analyserons l'ensemble des données collectées.
+
+        :blue-background[Cette page permet l'encodage de toutes les données nécessaires].
+
+        Le sélecteur ci-dessous vous permet :
+        * d'inscrire votre tournesol à l'expérience : :red[à faire **une seule fois** en début d'expérience] (sauf si votre tournesol
+        meurt en cours d'expérience) ;
+        * d'indiquer les caractéristiques de la pièce dans laquelle se trouve votre tournesol : :red[à faire **une seule fois**
+        après avoir caractérisé votre pièce] ;
+        * d'ajouter des observations sur la plante entière (stade, hauteur) : :red[à faire **chaque semaine**];
+        * d'ajouter des observations sur les feuilles de votre tournesol (longueur, largeur) : :red[à faire **une seule fois**
+        à **la fin** de l'expérience].
+        
+        Bon encodage ! :balloon:
+        
+        ---
+        '''
+    )
+
+    INSCRIPTION = 'inscription'
+    PIECE = 'piece'
+    OBS_PLANTE = 'obs_plante'
+    OBS_FEUILLE = 'obs_feuille'
+
+    FORM_TOURNESOL = {
+        INSCRIPTION : "Inscrire mon tournesol",
+        PIECE : "Indiquer les caractéristiques de la pièce dans laquelle se trouve mon tournesol",
+        OBS_PLANTE : "Ajouter des observations sur la plante entière (stade, hauteur)",
+        OBS_FEUILLE : "Ajouter des observations sur les feuilles de votre tournesol (longueur, largeur)"
+    }
+
+    form_selector = st.selectbox("Que voulez-vous faire ?", FORM_TOURNESOL.values())
+
+    if form_selector == FORM_TOURNESOL[INSCRIPTION]:
+        st.write("## Inscrire mon tournesol :sunflower:")
+
+        st.markdown('''
+            Avant tout, vous devez inscrire votre tournesol via le formulaire ci-dessous.
+            
+            Votre tournesol se verra alors assigné un identifiant correspondant à votre NOMA. Vous devrez renseigner cet
+            identifiant dans les autres formulaires pour rattacher vos observations à votre tournesol.
+            
+            :red[Si votre tournesol meurt en cours d'expérience], vous devrez inscrire votre 2ème tournesol en
+            utilisant ce même formulaire et en cochant la case correspondante. Votre 2ème tournesol recevra un
+            nouvel identifiant correspondant à votre NOMA + "_B", par exemple "31581300_B".
+        ''')
+
+        with st.form(INSCRIPTION, clear_on_submit=True):
+            col1, col2 = st.columns(2)
+
+            url = st.secrets["connections"]["gsheets"]['listing_etudiants']
+            df = conn.read(spreadsheet=url, ttl=0)
+
+            with col1:
+                etudiant = st.selectbox("Étudiant·e",
+                                        df.agg(lambda x: f"{x['nom']} {x['prénom']} - {x['NOMA']:.0f}", axis=1),
+                                        index=None,
+                                        help="Si vous n'apparaîssez pas ici, contacter Antoine au plus vite.")
+                second_tournesol = st.checkbox("Mon tournesol est mort. Ceci est mon 2ème tournesol.")
+
+            with col2:
+                date_reception = st.date_input("Date de réception du tournesol", format="DD/MM/YYYY",
+                                               value=datetime.now(TIME_ZONE),
+                                               help="Vous recevrez votre tournesol lors du TP1, en S2 ou S3 selon votre"
+                                                    "groupe de TP.")
+
+            remarque = st.text_area("Remarque :", key='remarque' + INSCRIPTION)
+
+            if st.form_submit_button("Enregistrer"):
+                mandatory_fields = [etudiant, date_reception]
+                if any(field is None for field in mandatory_fields):
+                    st.error(MANDATORY_FIELDS_MISSING)
+                else:
+                    NOMA = etudiant.split(' - ')[1]
+                    if second_tournesol:
+                        NOMA += "_B"
+
+                    new_row = {
+                        "plante_ID": NOMA,
+                        "date_reception": date_reception.strftime("%d/%m/%Y"),
+                        "remarque": remarque,
+                    }
+
+                    save_data(INSCRIPTION, new_row)
+
+        show_data(INSCRIPTION, "tournesols")
+
+    url = st.secrets["connections"]["gsheets"][INSCRIPTION]
+    df = conn.read(spreadsheet=url, ttl=0)
+
+    HELP_TEXT_ID_TOURNESOL = "L'identifiant de votre tournesol correspond à votre NOMA. Si votre 1er " \
+                             "tournesol est mort, l'identifiant de votre 2nd tournesol correspond à " \
+                             "votre NOMA + '_B"
+
+    if form_selector == FORM_TOURNESOL[PIECE]:
+        st.write("## Caractéristiques de ma pièce")
+
+        st.markdown('''
+            :red[Astuce] : vous pouvez taper votre NOMA dans le champ "ID du tournesol", c'est plus facile que
+            de parcourir toute la liste :wink:
+            
+            Si votre NOMA n'apparaît, c'est que vous n'avez pas inscrit votre tournesol.
+        ''')
+
+        with st.form(PIECE, clear_on_submit=True):
+            col1, col2 = st.columns(2)
+
+            with col1:
+                plante_ID = st.selectbox("ID du tournesol *", df['plante_ID'], index=None,
+                                         help=HELP_TEXT_ID_TOURNESOL)
+                distance_fenetre = st.number_input("Distance entre le tournesol et la fenêtre la plus proche [cm]", step=1)
+                heure_lum_art = st.number_input("Durée moyenne d'exposition à la lumière artificielle [h]", step=0.5)
+                position = st.text_input("Coordonnées GPS (extraite via clic-droit sur Google Maps)",
+                                         placeholder="50.6662847889796, 4.620254738686959")
+
+            with col2:
+                orientation = st.selectbox("Orientation de la fenêtre la plus proche *", ["Nord", "Sud", "Est", "Ouest"], index=None)
+                heure_lum_nat = st.number_input("Durée moyenne d'exposition à la lumière naturelle [h]", step=0.5)
+                temp = st.selectbox("Température moyenne dans la pièce [°C]",
+                                    ["Chaude (> 21 °C)", "Moyenne (19-21 °C)", "Fraîche (17-19 °C)", "Froide (< 17 °C)"],
+                                    index=None,
+                                    help="Estimation de la température moyenne dans la pièce tout au long de l'expérience. "
+                                         "Pour avoir une idée, mesurez quelques fois la température de la pièce entre 19 et 21h.")
+
+            remarque = st.text_area("Remarque(s) :", key='remarque' + PIECE)
+
+            if st.form_submit_button("Enregistrer"):
+                mandatory_fields = [plante_ID, distance_fenetre, heure_lum_nat, position, orientation, heure_lum_art, temp]
+                if any(field is None for field in mandatory_fields):
+                    st.error(MANDATORY_FIELDS_MISSING)
+                else:
+                    new_row = {
+                        "plante_ID": str(plante_ID),
+                        "orientation": orientation,
+                        "distance_fenetre": distance_fenetre,
+                        "heure_lum_nat": heure_lum_nat,
+                        "heure_lum_art": heure_lum_art,
+                        "temp": temp,
+                        "position": position,
+                        "remarque": remarque
+                    }
+
+                    save_data(PIECE, new_row)
+
+        show_data(PIECE, "caractéristiques des pièces")
+
+    if form_selector == FORM_TOURNESOL[OBS_PLANTE]:
+        st.write("## Observation de la plante entière")
+
+        with st.form(OBS_PLANTE, clear_on_submit=True):
+            col1, col2 = st.columns(2)
+
+            with col1:
+                plante_ID = st.selectbox("ID du tournesol *", df['plante_ID'], index=None,
+                                         help=HELP_TEXT_ID_TOURNESOL)
+                date_mes = st.date_input("Date de l'observation *", format="DD/MM/YYYY", value=datetime.now(TIME_ZONE))
+
+            with col2:
+                stade_liste = ["A2",
+                               "B2", "B3", "B4", "B5", "B6", "B7", "B8", "B9", "B10", "B11", "B12", "B13",
+                               "E1", "E2", "E3"]
+
+                hauteur = st.number_input("Hauteur (du pot jusqu'au bourgeon terminal) * [cm]", format="%.1f")
+                stade = st.selectbox("Stade de la plante (voir descriptif des stades sur Moodle)", stade_liste, index=None)
+
+            if st.form_submit_button("Enregistrer"):
+                mandatory_fields = [plante_ID, date_mes, hauteur, stade]
+                if any(field is None for field in mandatory_fields):
+                    st.error(MANDATORY_FIELDS_MISSING)
+                else:
+                    new_row = {
+                        "plante_ID": str(plante_ID),
+                        "date": date_mes.strftime("%d/%m/%Y"),
+                        "hauteur": hauteur,
+                        "stade": stade,
+                    }
+
+                    save_data(OBS_PLANTE, new_row)
+
+        show_data(OBS_PLANTE, "observations de la plante entière")
+
+    if form_selector == FORM_TOURNESOL[OBS_FEUILLE]:
+        st.write("## Observation des feuilles")
+
+        with st.form(OBS_FEUILLE, clear_on_submit=True):
+            col1, col2 = st.columns(2)
+
+            with col1:
+                plante_ID = st.selectbox("ID du tournesol *", df['plante_ID'], index=None,
+                                         help=HELP_TEXT_ID_TOURNESOL)
+                date_mes = st.date_input("Date de l'observation *", format="DD/MM/YYYY", value=datetime.now(TIME_ZONE))
+
+            with col2:
+                rang = st.number_input("Rang de la feuille *", step=1,
+                                       help="Numéro d'ordre de la feuille (par ordre d'apparition). La feuille la plus "
+                                            "âgée (rang 1) est la feuille la plus basse alors que la feuille la plus "
+                                            "récente (rang élevé) est celle qui se trouve le plus haut. Chez le tournesol, "
+                                            "les premières feuilles sont parfois opposées. Dans ce cas, vous pouvez les "
+                                            "numéroter 1 et 2 au hasard, puis 3 et 4 au hasard.")
+                longueur = st.number_input("Longueur de la feuille * [cm]", format="%.1f",
+                                           help="Se mesure de la base du limbe (contre la fin du pétiole) jusqu'à la "
+                                                "pointe de la feuille.")
+                largeur = st.number_input("Largeur de la feuille * [cm]", format="%.1f",
+                                          help="Se mesure à l'endroit le plus large du limbe.")
+
+            if st.form_submit_button("Enregistrer"):
+                mandatory_fields = [plante_ID, date_mes, rang, longueur, largeur]
+                if any(field is None for field in mandatory_fields):
+                    st.error(MANDATORY_FIELDS_MISSING)
+                else:
+                    new_row = {
+                        "plante_ID": str(plante_ID),
+                        "date": date_mes.strftime("%d/%m/%Y"),
+                        "rang": rang,
+                        "longueur": longueur,
+                        "largeur": largeur,
+                    }
+
+                    save_data(OBS_FEUILLE, new_row)
+
+        show_data(OBS_FEUILLE, "observations des feuilles")
