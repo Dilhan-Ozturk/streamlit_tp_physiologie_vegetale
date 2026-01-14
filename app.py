@@ -116,6 +116,8 @@ def show_data(spreadsheet_key, label):
         
                     with pd.ExcelWriter(buffer, engine='xlsxwriter') as writer:
                         df.to_excel(writer, index=False)
+                        # -> UserWarning: Calling close() on already closed file.
+                        # MAIS, retirer writer.close() produit des fichiers excels corrompus.
                         writer.close()
                         st.download_button(
                             label="📥 Télécharger en format .xlsx",
@@ -170,8 +172,10 @@ with tab_eau:
             pos = st.selectbox("Position sur le limbe *", ["Base", "Milieu", "Pointe"], index=None, placeholder="Choisir...")
             face = st.selectbox("Face de la feuille *", ["Abaxiale", "Adaxiale"], index=None, placeholder="Choisir...")
         with c3:
-            cond = st.number_input("Conductance stomatique (mmol/m².s) *", format="%.2f", value=None, step=0.01)
-            par = st.number_input("PAR (µmol/m².s)", format="%.2f", value=None, step=0.01)
+            cond = st.number_input("Conductance stomatique (mmol/m².s) *", format="%.2f", value=None, step=0.01,
+                                   min_value=5.0, max_value=1200.0)
+            par = st.number_input("PAR (µmol/m².s)", format="%.2f", value=None, step=0.01,
+                                  min_value=0.0, max_value=2500.0)
         
         remarque = st.text_area("Remarque", key="rem_eau")
         submit = st.form_submit_button("Enregistrer")
@@ -278,8 +282,10 @@ with tab_photo:
                 id_p = st.number_input("ID plante (1-20) *", 1, 20, value=None, step=1)
 
             with c2:
-                gs = st.number_input("Conductance stomatique (µmol/m².s) *", value=None, step=0.1)
-                par = st.number_input("PAR (µmol/m².s) *", value=None, step=0.01)
+                gs = st.number_input("Conductance stomatique (µmol/m².s) *", value=None, step=0.1,
+                                     min_value=5.0, max_value=1200.0)
+                par = st.number_input("PAR (µmol/m².s) *", value=None, step=0.01,
+                                      min_value=0.0, max_value=2500.0)
                 app = st.selectbox("Appareil *", ["Lent", "Rapide"], index=None)
                 trait = st.selectbox("Traitement *", ["Lumière", "Ombre"], index=None)
             
@@ -413,7 +419,7 @@ with tab_tournesol:
         INSCRIPTION : "Inscrire mon tournesol",
         PIECE : "Indiquer les caractéristiques de la pièce dans laquelle se trouve mon tournesol",
         OBS_PLANTE : "Ajouter des observations sur la plante entière (stade, hauteur)",
-        OBS_FEUILLE : "Ajouter des observations sur les feuilles de votre tournesol (longueur, largeur)"
+        OBS_FEUILLE : "Ajouter des observations sur les feuilles de mon tournesol (longueur, largeur)"
     }
 
     form_selector = st.selectbox("Que voulez-vous faire ?", FORM_TOURNESOL.values())
@@ -431,14 +437,16 @@ with tab_tournesol:
             utilisant ce même formulaire et en cochant la case correspondante. Votre 2ème tournesol recevra un
             nouvel identifiant correspondant à votre NOMA + "_B", par exemple "31581300_B".
         ''')
-        df = get_df_from_url('listing_etudiants')
+
+        students = get_df_from_url('listing_etudiants')
+        tournesols = get_df_from_url(INSCRIPTION)
         
         with st.form(INSCRIPTION, clear_on_submit=True):
             col1, col2 = st.columns(2)
 
             with col1:
                 etudiant = st.selectbox("Étudiant·e",
-                                        df.agg(lambda x: f"{x['nom']} {x['prénom']} - {x['NOMA']:.0f}", axis=1),
+                                        students.agg(lambda x: f"{x['nom']} {x['prénom']} - {x['NOMA']:.0f}", axis=1),
                                         index=None,
                                         help="Si vous n'apparaîssez pas ici, contacter Antoine au plus vite.")
                 second_tournesol = st.checkbox("Mon tournesol est mort. Ceci est mon 2ème tournesol.")
@@ -457,21 +465,23 @@ with tab_tournesol:
                     st.error(MANDATORY_FIELDS_MISSING)
                 else:
                     NOMA = etudiant.split(' - ')[1]
+
                     if second_tournesol:
                         NOMA += "_B"
 
-                    new_row = {
-                        "plante_ID": NOMA,
-                        "date_reception": date_reception.strftime("%d/%m/%Y"),
-                        "remarque": remarque,
-                    }
+                    if tournesols.shape[0] > 0 and NOMA in tournesols['plante_ID'].astype(str).to_list():
+                        st.error("Vous avez déjà inscrit votre tournesol. Si il est mort et que vous souhaitez inscrire "
+                                 "un 2ème tournesol, cochez la case correspondante.")
+                    else:
+                        new_row = {
+                            "plante_ID": str(NOMA),
+                            "date_reception": date_reception.strftime("%d/%m/%Y"),
+                            "remarque": remarque,
+                        }
 
-                    save_data(INSCRIPTION, new_row)
+                        save_data(INSCRIPTION, new_row)
 
         show_data(INSCRIPTION, "tournesols")
-
-    url = st.secrets["connections"]["gsheets"][INSCRIPTION]
-    df = get_df_from_url(url)
 
     HELP_TEXT_ID_TOURNESOL = "L'identifiant de votre tournesol correspond à votre NOMA. Si votre 1er " \
                              "tournesol est mort, l'identifiant de votre 2nd tournesol correspond à " \
