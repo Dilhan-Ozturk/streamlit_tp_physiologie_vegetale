@@ -9,21 +9,27 @@ from google.oauth2.service_account import Credentials
 # Définition de quelques constantes
 TITLE = "LBIR1251 - Travaux pratiques : collecte des données"
 TIME_ZONE = pytz.timezone('Europe/Brussels')
-
-# Configuration de la page
 st.set_page_config(page_title=TITLE, layout="wide")
 
-@st.cache_data(ttl=60)  # Cache of streamlit
+INSCRIPTION = 'inscription'
+PIECE = 'piece'
+OBS_PLANTE = 'obs_plante'
+OBS_FEUILLE = 'obs_feuille'
+
+# --- FONCTION : LECTURE (AVEC CACHE) ---
+@st.cache_data(ttl=60)
 def get_df_from_url(url_key):
     """Lit un Google Sheet à partir de sa clé dans les secrets et retourne un DataFrame"""
-    sks = st.secrets["connections"]["gsheets"]
-    creds = Credentials.from_service_account_info(sks, scopes=["https://www.googleapis.com/auth/spreadsheets"])
-    gc = gspread.authorize(creds)
-    # url_key peut être une URL directe ou une clé de secret
-    url = sks.get(url_key, url_key) 
-    data = gc.open_by_url(url).sheet1.get_all_records()
-    return pd.DataFrame(data)
-
+    try:
+        sks = st.secrets["connections"]["gsheets"]
+        creds = Credentials.from_service_account_info(sks, scopes=["https://www.googleapis.com/auth/spreadsheets"])
+        gc = gspread.authorize(creds)
+        url = sks.get(url_key, url_key) 
+        data = gc.open_by_url(url).sheet1.get_all_records()
+        return pd.DataFrame(data)
+    except Exception as e:
+        st.error(f"Erreur de lecture ({url_key}): {e}")
+        return pd.DataFrame()
 
 # --- FONCTION : SAUVEGARDE ---
 def save_data(spreadsheet_key, new_row_dict):
@@ -61,22 +67,24 @@ def save_data(spreadsheet_key, new_row_dict):
         
         st.toast("Données enregistrées !", icon="✅")
         
+        # On vide le cache pour que la nouvelle ligne soit visible au prochain affichage
+        st.cache_data.clear()
+        
     except Exception as e:
         st.error(f"Erreur lors de l'enregistrement : {e}")
 
 # --- FONCTION : VISUALISATION & TÉLÉCHARGEMENT ---
 def show_data(spreadsheet_key, label):
     try:
-        # 1. Connexion via gspread
+        # Connexion via gspread
         df = get_df_from_url(spreadsheet_key)
 
-        st.write(f"### Historique : {label}")
-        
         if df.empty:
             st.info("Aucune donnée enregistrée pour le moment.")
             return
-
-        # 3. Boutons d'export
+            
+        st.write(f"### Historique : {label}")
+        
         col_opts, col_dl_csv, col_dl_excel = st.columns([1, 1, 1])
         
         with col_opts:
@@ -390,11 +398,6 @@ with tab_tournesol:
         ---
         '''
     )
-
-    INSCRIPTION = 'inscription'
-    PIECE = 'piece'
-    OBS_PLANTE = 'obs_plante'
-    OBS_FEUILLE = 'obs_feuille'
 
     FORM_TOURNESOL = {
         INSCRIPTION : "Inscrire mon tournesol",
