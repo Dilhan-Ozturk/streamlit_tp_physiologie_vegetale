@@ -75,56 +75,61 @@ def save_data(spreadsheet_key, new_row_dict):
 
 # --- FONCTION : VISUALISATION & TÉLÉCHARGEMENT ---
 def show_data(spreadsheet_key, label):
-    try:
-        # Connexion via gspread
-        df = get_df_from_url(spreadsheet_key)
-
-        if df.empty:
-            st.info("Aucune donnée enregistrée pour le moment.")
-            return
+    # On utilise une clé unique pour la checkbox basée sur l'url_key
+    show_historical_data = st.checkbox(f"Afficher/Actualiser le tableau des {label}", key=f"check_{url_key}")
+    if show_historical_data:
+        try:
+            # Connexion via gspread
+            df = get_df_from_url(spreadsheet_key)
+    
+            if df.empty:
+                st.info("Aucune donnée enregistrée pour le moment.")
+                return
+                
+            st.write(f"### Historique : {label}")
             
-        st.write(f"### Historique : {label}")
-        
-        col_opts, col_dl_csv, col_dl_excel = st.columns([1, 1, 1])
-        
-        with col_opts:
-            tout_afficher = st.checkbox(f"Afficher tout l'historique ({len(df)} lignes)", key=f"check_{spreadsheet_key}")
-        
-        with col_dl_csv:
-            # Préparation du fichier CSV pour le téléchargement
-            # on utilise utf-8-sig pour que les accents s'affichent bien dans Excel
-            csv = df.to_csv(index=False).encode('utf-8-sig')
-
-            st.download_button(
-                label="📥 Télécharger en format .csv",
-                data=csv,
-                file_name=f"export_{label.replace(' ', '_').lower()}_{datetime.now(TIME_ZONE).strftime('%d_%m_%Y')}.csv",
-                mime='text/csv',
-                key=f"btn_{spreadsheet_key}_csv"
-            )
-
-        with col_dl_excel:
-            buffer = io.BytesIO()
-
-            with pd.ExcelWriter(buffer, engine='xlsxwriter') as writer:
-                df.to_excel(writer, index=False)
-                writer.close()
+            col_opts, col_dl_csv, col_dl_excel = st.columns([1, 1, 1])
+            
+            with col_opts:
+                tout_afficher = st.checkbox(f"Afficher tout l'historique ({len(df)} lignes)", key=f"check_{spreadsheet_key}")
+            
+            with col_dl_csv:
+                # Préparation du fichier CSV pour le téléchargement
+                # on utilise utf-8-sig pour que les accents s'affichent bien dans Excel
+                csv = df.to_csv(index=False).encode('utf-8-sig')
+    
                 st.download_button(
-                    label="📥 Télécharger en format .xlsx",
-                    data=buffer,
-                    file_name=f"export_{label.replace(' ', '_').lower()}_{datetime.now(TIME_ZONE).strftime('%d_%m_%Y')}.xlsx",
-                    mime='application/vnd.ms-excel',
-                    key = f"btn_{spreadsheet_key}_excel"
+                    label="📥 Télécharger en format .csv",
+                    data=csv,
+                    file_name=f"export_{label.replace(' ', '_').lower()}_{datetime.now(TIME_ZONE).strftime('%d_%m_%Y')}.csv",
+                    mime='text/csv',
+                    key=f"btn_{spreadsheet_key}_csv"
                 )
-
-        if tout_afficher:
-            st.dataframe(df, width="stretch")
-        else:
-            st.dataframe(df.tail(10), width="stretch")
-            st.caption("Affichage des 10 dernières entrées.")
-            
-    except Exception as e:
-        st.warning(f"Impossible de charger les données pour {label}. Vérifiez l'URL et les accès. Erreur: {e}")
+    
+            with col_dl_excel:
+                buffer = io.BytesIO()
+    
+                with pd.ExcelWriter(buffer, engine='xlsxwriter') as writer:
+                    df.to_excel(writer, index=False)
+                    writer.close()
+                    st.download_button(
+                        label="📥 Télécharger en format .xlsx",
+                        data=buffer,
+                        file_name=f"export_{label.replace(' ', '_').lower()}_{datetime.now(TIME_ZONE).strftime('%d_%m_%Y')}.xlsx",
+                        mime='application/vnd.ms-excel',
+                        key = f"btn_{spreadsheet_key}_excel"
+                    )
+    
+            if tout_afficher:
+                st.dataframe(df, width="stretch")
+            else:
+                st.dataframe(df.tail(10), width="stretch")
+                st.caption("Affichage des 10 dernières entrées.")
+                
+        except Exception as e:
+            st.warning(f"Impossible de charger les données pour {label}. Vérifiez l'URL et les accès. Erreur: {e}")
+    else:
+        st.info("Cochez la case ci-dessus pour afficher les données encodées.")
 
 
 # --- INTERFACE PRINCIPALE ---
