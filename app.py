@@ -412,8 +412,10 @@ with tab_tournesol:
         with st.form(INSCRIPTION, clear_on_submit=True):
             col1, col2 = st.columns(2)
 
-            url = st.secrets["connections"]["gsheets"]['listing_etudiants']
-            df = conn.read(spreadsheet=url, ttl=0)
+            sks = st.secrets["connections"]["gsheets"]
+            creds = Credentials.from_service_account_info(sks, scopes=["https://www.googleapis.com/auth/spreadsheets"])
+            gc = gspread.authorize(creds)
+            df = pd.DataFrame(gc.open_by_url(sks['listing_etudiants']).sheet1.get_all_records())
 
             with col1:
                 etudiant = st.selectbox("Étudiant·e",
