@@ -13,9 +13,6 @@ TIME_ZONE = pytz.timezone('Europe/Brussels')
 # Configuration de la page
 st.set_page_config(page_title=TITLE, layout="wide")
 
-# Connexion Google Sheets
-conn = st.connection("gsheets", type=GSheetsConnection)
-
 def get_df_from_url(url_key):
     """Lit un Google Sheet à partir de sa clé dans les secrets et retourne un DataFrame"""
     sks = st.secrets["connections"]["gsheets"]
@@ -69,25 +66,8 @@ def save_data(spreadsheet_key, new_row_dict):
 # --- FONCTION : VISUALISATION & TÉLÉCHARGEMENT ---
 def show_data(spreadsheet_key, label):
     try:
-        # 1. Connexion via gspread (plus stable que conn.read pour les comptes de service)
-        sks = st.secrets["connections"]["gsheets"]
-        credentials_dict = {
-            "type": "service_account",
-            "project_id": sks["project_id"],
-            "private_key_id": sks["private_key_id"],
-            "private_key": sks["private_key"],
-            "client_email": sks["client_email"],
-            "client_id": sks["client_id"],
-            "auth_uri": sks["auth_uri"],
-            "token_uri": "https://oauth2.googleapis.com/token",
-        }
-        scopes = ["https://www.googleapis.com/auth/spreadsheets"]
-        creds = Credentials.from_service_account_info(credentials_dict, scopes=scopes)
-        client = gspread.authorize(creds)
-        
-        # 2. Lecture des données
-        url = sks[spreadsheet_key]
-        df = get_df_from_url(url)
+        # 1. Connexion via gspread
+        df = get_df_from_url(spreadsheet_key)
 
         st.write(f"### Historique : {label}")
         
@@ -129,9 +109,9 @@ def show_data(spreadsheet_key, label):
                 )
 
         if tout_afficher:
-            st.dataframe(df, width="stretch")
+            st.dataframe(df, use_container_width=True)
         else:
-            st.dataframe(df.tail(10), width="stretch")
+            st.dataframe(df.tail(10), use_container_width=True)
             st.caption("Affichage des 10 dernières entrées.")
             
     except Exception as e:
@@ -441,10 +421,7 @@ with tab_tournesol:
         with st.form(INSCRIPTION, clear_on_submit=True):
             col1, col2 = st.columns(2)
 
-            sks = st.secrets["connections"]["gsheets"]
-            creds = Credentials.from_service_account_info(sks, scopes=["https://www.googleapis.com/auth/spreadsheets"])
-            gc = gspread.authorize(creds)
-            df = pd.DataFrame(gc.open_by_url(sks['listing_etudiants']).sheet1.get_all_records())
+            df = get_df_from_url('listing_etudiants')
 
             with col1:
                 etudiant = st.selectbox("Étudiant·e",
