@@ -118,9 +118,9 @@ def show_data(spreadsheet_key, label):
                 )
 
         if tout_afficher:
-            st.dataframe(df, use_container_width=True)
+            st.dataframe(df, width="stretch")
         else:
-            st.dataframe(df.tail(10), use_container_width=True)
+            st.dataframe(df.tail(10), width="stretch")
             st.caption("Affichage des 10 dernières entrées.")
             
     except Exception as e:
