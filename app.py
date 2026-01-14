@@ -1,12 +1,9 @@
 import gspread
 import io
 import pytz
-
 import pandas as pd
 import streamlit as st
-
 from datetime import datetime
-from streamlit_gsheets import GSheetsConnection
 from google.oauth2.service_account import Credentials
 
 # Définition de quelques constantes
@@ -18,6 +15,17 @@ st.set_page_config(page_title=TITLE, layout="wide")
 
 # Connexion Google Sheets
 conn = st.connection("gsheets", type=GSheetsConnection)
+
+def get_df_from_url(url_key):
+    """Lit un Google Sheet à partir de sa clé dans les secrets et retourne un DataFrame"""
+    sks = st.secrets["connections"]["gsheets"]
+    creds = Credentials.from_service_account_info(sks, scopes=["https://www.googleapis.com/auth/spreadsheets"])
+    gc = gspread.authorize(creds)
+    # url_key peut être une URL directe ou une clé de secret
+    url = sks.get(url_key, url_key) 
+    data = gc.open_by_url(url).sheet1.get_all_records()
+    return pd.DataFrame(data)
+
 
 # --- FONCTION : SAUVEGARDE ---
 def save_data(spreadsheet_key, new_row_dict):
@@ -79,9 +87,7 @@ def show_data(spreadsheet_key, label):
         
         # 2. Lecture des données
         url = sks[spreadsheet_key]
-        sheet = client.open_by_url(url).sheet1
-        data = sheet.get_all_records()
-        df = pd.DataFrame(data)
+        df = get_df_from_url(url)
 
         st.write(f"### Historique : {label}")
         
@@ -90,9 +96,6 @@ def show_data(spreadsheet_key, label):
             return
 
         # 3. Boutons d'export
-        col_opts, col_dl_csv, col_dl_excel = st.columns([1, 1, 1])
-        
-        # Création de deux colonnes pour les options et le téléchargement
         col_opts, col_dl_csv, col_dl_excel = st.columns([1, 1, 1])
         
         with col_opts:
@@ -478,7 +481,7 @@ with tab_tournesol:
         show_data(INSCRIPTION, "tournesols")
 
     url = st.secrets["connections"]["gsheets"][INSCRIPTION]
-    df = conn.read(spreadsheet=url, ttl=0)
+    df = get_df_from_url(url)
 
     HELP_TEXT_ID_TOURNESOL = "L'identifiant de votre tournesol correspond à votre NOMA. Si votre 1er " \
                              "tournesol est mort, l'identifiant de votre 2nd tournesol correspond à " \
