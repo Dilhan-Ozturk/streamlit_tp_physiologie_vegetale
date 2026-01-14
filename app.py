@@ -77,7 +77,7 @@ def save_data(spreadsheet_key, new_row_dict):
 def show_data(spreadsheet_key, label):
     st.write(f"### Historique : {label}")
     
-    unique_key = f"check_{url_key}_{label.replace(' ', '_')}"
+    unique_key = f"check_{spreadsheet_key}_{label.replace(' ', '_')}"
 
     show_historical_data = st.checkbox(
         f"Afficher/Actualiser le tableau des {label}", 
