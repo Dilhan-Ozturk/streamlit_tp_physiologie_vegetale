@@ -13,6 +13,7 @@ TIME_ZONE = pytz.timezone('Europe/Brussels')
 # Configuration de la page
 st.set_page_config(page_title=TITLE, layout="wide")
 
+@st.cache_data(ttl=5)  # Cache of streamlit
 def get_df_from_url(url_key):
     """Lit un Google Sheet à partir de sa clé dans les secrets et retourne un DataFrame"""
     sks = st.secrets["connections"]["gsheets"]
