@@ -76,7 +76,7 @@ def save_data(spreadsheet_key, new_row_dict):
 # --- FONCTION : VISUALISATION & TÉLÉCHARGEMENT ---
 def show_data(spreadsheet_key, label):
     # On utilise une clé unique pour la checkbox basée sur l'url_key
-    show_historical_data = st.checkbox(f"Afficher/Actualiser le tableau des {label}", key=f"check_{url_key}")
+    show_historical_data = st.checkbox(f"Afficher/Actualiser le tableau des {label}", key=f"check_{spreadsheet_key}")
     if show_historical_data:
         try:
             # Connexion via gspread
