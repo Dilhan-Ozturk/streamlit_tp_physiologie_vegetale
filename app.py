@@ -61,10 +61,36 @@ def save_data(spreadsheet_key, new_row_dict):
 # --- FONCTION : VISUALISATION & TÉLÉCHARGEMENT ---
 def show_data(spreadsheet_key, label):
     try:
-        url = st.secrets["connections"]["gsheets"][spreadsheet_key]
-        df = conn.read(spreadsheet=url, ttl=0)
+        # 1. Connexion via gspread (plus stable que conn.read pour les comptes de service)
+        sks = st.secrets["connections"]["gsheets"]
+        credentials_dict = {
+            "type": "service_account",
+            "project_id": sks["project_id"],
+            "private_key_id": sks["private_key_id"],
+            "private_key": sks["private_key"],
+            "client_email": sks["client_email"],
+            "client_id": sks["client_id"],
+            "auth_uri": sks["auth_uri"],
+            "token_uri": "https://oauth2.googleapis.com/token",
+        }
+        scopes = ["https://www.googleapis.com/auth/spreadsheets"]
+        creds = Credentials.from_service_account_info(credentials_dict, scopes=scopes)
+        client = gspread.authorize(creds)
+        
+        # 2. Lecture des données
+        url = sks[spreadsheet_key]
+        sheet = client.open_by_url(url).sheet1
+        data = sheet.get_all_records()
+        df = pd.DataFrame(data)
 
-        st.write("### Historique")
+        st.write(f"### Historique : {label}")
+        
+        if df.empty:
+            st.info("Aucune donnée enregistrée pour le moment.")
+            return
+
+        # 3. Boutons d'export
+        col_opts, col_dl_csv, col_dl_excel = st.columns([1, 1, 1])
         
         # Création de deux colonnes pour les options et le téléchargement
         col_opts, col_dl_csv, col_dl_excel = st.columns([1, 1, 1])
