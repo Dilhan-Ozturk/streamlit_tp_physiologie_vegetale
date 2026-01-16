@@ -424,6 +424,8 @@ with tab_tournesol:
 
     form_selector = st.selectbox("Que voulez-vous faire ?", FORM_TOURNESOL.values())
 
+    tournesols = get_df_from_url(INSCRIPTION)
+
     if form_selector == FORM_TOURNESOL[INSCRIPTION]:
         st.write("## Inscrire mon tournesol :sunflower:")
 
@@ -439,7 +441,6 @@ with tab_tournesol:
         ''')
 
         students = get_df_from_url('listing_etudiants')
-        tournesols = get_df_from_url(INSCRIPTION)
         
         with st.form(INSCRIPTION, clear_on_submit=True):
             col1, col2 = st.columns(2)
@@ -501,7 +502,7 @@ with tab_tournesol:
             col1, col2 = st.columns(2)
 
             with col1:
-                plante_ID = st.selectbox("ID du tournesol *", df['plante_ID'], index=None,
+                plante_ID = st.selectbox("ID du tournesol *", tournesols['plante_ID'], index=None,
                                          help=HELP_TEXT_ID_TOURNESOL)
                 distance_fenetre = st.number_input("Distance entre le tournesol et la fenêtre la plus proche [cm]", step=1)
                 heure_lum_art = st.number_input("Durée moyenne d'exposition à la lumière artificielle [h]", step=0.5)
@@ -546,7 +547,7 @@ with tab_tournesol:
             col1, col2 = st.columns(2)
 
             with col1:
-                plante_ID = st.selectbox("ID du tournesol *", df['plante_ID'], index=None,
+                plante_ID = st.selectbox("ID du tournesol *", tournesols['plante_ID'], index=None,
                                          help=HELP_TEXT_ID_TOURNESOL)
                 date_mes = st.date_input("Date de l'observation *", format="DD/MM/YYYY", value=datetime.now(TIME_ZONE))
 
@@ -581,7 +582,7 @@ with tab_tournesol:
             col1, col2 = st.columns(2)
 
             with col1:
-                plante_ID = st.selectbox("ID du tournesol *", df['plante_ID'], index=None,
+                plante_ID = st.selectbox("ID du tournesol *", tournesols['plante_ID'], index=None,
                                          help=HELP_TEXT_ID_TOURNESOL)
                 date_mes = st.date_input("Date de l'observation *", format="DD/MM/YYYY", value=datetime.now(TIME_ZONE))
 
