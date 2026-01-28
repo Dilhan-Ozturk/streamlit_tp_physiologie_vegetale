@@ -165,8 +165,12 @@ with tab_eau:
         with c1:
             date_v = st.date_input("Date de la mesure *", format="DD/MM/YYYY", value=datetime.now(TIME_ZONE))
             heure_v = st.time_input("Heure de la mesure*", value=datetime.now(TIME_ZONE))
-            options_rang = ["1-2", "3-4", "5-6", "7-8", "9-10", "11-12", "13-14", "15-16", "17-18", "19-20", "21-22", "23-24"]
-            rang = st.selectbox("Rang de la feuille *", options_rang, index=None, placeholder="Choisir...")
+            rang = st.number_input("Rang de la feuille *", step=1, min_value=1,
+                                   help="Numéro d'ordre de la feuille (par ordre d'apparition). La feuille la plus "
+                                        "âgée (rang 1) est la feuille la plus basse alors que la feuille la plus "
+                                        "récente (rang élevé) est celle qui se trouve le plus haut. Chez le tournesol, "
+                                        "les premières feuilles sont parfois opposées. Dans ce cas, vous pouvez les "
+                                        "numéroter 1 et 2 au hasard, puis 3 et 4 au hasard.")
         with c2:
             etat = st.selectbox("État de la feuille *", ["Bien développée", "Jeune", "Vieille"], index=None, placeholder="Choisir...")
             pos = st.selectbox("Position sur le limbe *", ["Base", "Milieu", "Pointe"], index=None, placeholder="Choisir...")
@@ -587,7 +591,7 @@ with tab_tournesol:
                 date_mes = st.date_input("Date de l'observation *", format="DD/MM/YYYY", value=datetime.now(TIME_ZONE))
 
             with col2:
-                rang = st.number_input("Rang de la feuille *", step=1,
+                rang = st.number_input("Rang de la feuille *", step=1, min_value=1,
                                        help="Numéro d'ordre de la feuille (par ordre d'apparition). La feuille la plus "
                                             "âgée (rang 1) est la feuille la plus basse alors que la feuille la plus "
                                             "récente (rang élevé) est celle qui se trouve le plus haut. Chez le tournesol, "
