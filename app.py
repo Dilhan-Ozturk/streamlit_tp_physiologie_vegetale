@@ -165,16 +165,15 @@ with tab_eau:
         with c1:
             date_v = st.date_input("Date de la mesure *", format="DD/MM/YYYY", value=datetime.now(TIME_ZONE))
             heure_v = st.time_input("Heure de la mesure*", value=datetime.now(TIME_ZONE))
+        with c2:
             rang = st.number_input("Rang de la feuille *", step=1, min_value=1,
                                    help="Numéro d'ordre de la feuille (par ordre d'apparition). La feuille la plus "
                                         "âgée (rang 1) est la feuille la plus basse alors que la feuille la plus "
                                         "récente (rang élevé) est celle qui se trouve le plus haut. Chez le tournesol, "
                                         "les premières feuilles sont parfois opposées. Dans ce cas, vous pouvez les "
                                         "numéroter 1 et 2 au hasard, puis 3 et 4 au hasard.")
-        with c2:
-            etat = st.selectbox("État de la feuille *", ["Bien développée", "Jeune", "Vieille"], index=None, placeholder="Choisir...")
-            pos = st.selectbox("Position sur le limbe *", ["Base", "Milieu", "Pointe"], index=None, placeholder="Choisir...")
             face = st.selectbox("Face de la feuille *", ["Abaxiale", "Adaxiale"], index=None, placeholder="Choisir...")
+            etat = st.selectbox("État de la feuille *", ["Bien développée", "Jeune", "Vieille"], index=None, placeholder="Choisir...")
         with c3:
             cond = st.number_input("Conductance stomatique (mmol/m².s) *", format="%.2f", value=None, step=0.01,
                                    min_value=5.0, max_value=1200.0)
@@ -185,7 +184,7 @@ with tab_eau:
         submit = st.form_submit_button("Enregistrer")
 
         if submit:
-            if any(v is None for v in [rang, etat, pos, face, cond]):
+            if any(v is None for v in [rang, etat, face, cond]):
                 st.error(MANDATORY_FIELDS_MISSING)
             else:
                 new_row = {
@@ -193,7 +192,6 @@ with tab_eau:
                     "heure": heure_v.strftime("%H:%M"),
                     "rang_f": rang,
                     "état_f": etat,
-                    "pos_f": pos,
                     "face_f": face,
                     "cond": cond,
                     "PAR": par,
