@@ -506,17 +506,17 @@ with tab_tournesol:
             with col1:
                 plante_ID = st.selectbox("ID du tournesol *", tournesols['plante_ID'], index=None,
                                          help=HELP_TEXT_ID_TOURNESOL)
-                distance_fenetre = st.number_input("Distance entre le tournesol et la fenêtre la plus proche [cm]", step=1)
-                heure_lum_art = st.number_input("Durée moyenne d'exposition à la lumière artificielle [h]", step=0.5,
+                distance_fenetre = st.number_input("Distance entre le tournesol et la fenêtre la plus proche [cm] *", step=1)
+                heure_lum_art = st.number_input("Durée moyenne d'exposition à la lumière artificielle [h] *", step=0.5,
                                                 min_value=0.0, max_value=18.0)
-                position = st.text_input("Coordonnées GPS (extraite via clic-droit sur Google Maps)",
+                position = st.text_input("Coordonnées GPS (extraite via clic-droit sur Google Maps) *",
                                          placeholder="50.6662847889796, 4.620254738686959")
 
             with col2:
                 orientation = st.selectbox("Orientation de la fenêtre la plus proche *", ["Nord", "Sud", "Est", "Ouest"], index=None)
-                heure_lum_nat = st.number_input("Durée moyenne d'exposition à la lumière naturelle [h]", step=0.5,
+                heure_lum_nat = st.number_input("Durée moyenne d'exposition à la lumière naturelle [h] *", step=0.5,
                                                 min_value=0.0, max_value=18.0)
-                temp = st.selectbox("Température moyenne dans la pièce [°C]",
+                temp = st.selectbox("Température moyenne dans la pièce [°C] *",
                                     ["Chaude (> 21 °C)", "Moyenne (19-21 °C)", "Fraîche (17-19 °C)", "Froide (< 17 °C)"],
                                     index=None,
                                     help="Estimation de la température moyenne dans la pièce tout au long de l'expérience. "
@@ -525,7 +525,9 @@ with tab_tournesol:
             remarque = st.text_area("Remarque(s) :", key='remarque' + PIECE)
 
             if st.form_submit_button("Enregistrer"):
-                mandatory_fields = [plante_ID, distance_fenetre, heure_lum_nat, position, orientation, heure_lum_art, temp]
+                mandatory_fields = [plante_ID, distance_fenetre, heure_lum_nat, position, orientation, heure_lum_art,
+                                    temp, position]
+
                 if any(field is None for field in mandatory_fields):
                     st.error(MANDATORY_FIELDS_MISSING)
                 else:
