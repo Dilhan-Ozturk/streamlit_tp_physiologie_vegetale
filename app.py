@@ -176,7 +176,7 @@ with tab_eau:
             etat = st.selectbox("État de la feuille *", ["Bien développée", "Jeune", "Vieille"], index=None, placeholder="Choisir...")
         with c3:
             cond = st.number_input("Conductance stomatique (mmol/m².s) *", format="%.2f", value=None, step=0.01,
-                                   min_value=5.0, max_value=1200.0)
+                                   min_value=0.0, max_value=1200.0)
             par = st.number_input("PAR (µmol/m².s)", format="%.2f", value=None, step=0.01,
                                   min_value=0.0, max_value=2500.0)
         
@@ -285,7 +285,7 @@ with tab_photo:
 
             with c2:
                 gs = st.number_input("Conductance stomatique (µmol/m².s) *", value=None, step=0.1,
-                                     min_value=5.0, max_value=1200.0)
+                                     min_value=0.0, max_value=1200.0)
                 par = st.number_input("PAR (µmol/m².s) *", value=None, step=0.01,
                                       min_value=0.0, max_value=2500.0)
                 app = st.selectbox("Appareil *", ["Lent", "Rapide"], index=None)
@@ -507,13 +507,15 @@ with tab_tournesol:
                 plante_ID = st.selectbox("ID du tournesol *", tournesols['plante_ID'], index=None,
                                          help=HELP_TEXT_ID_TOURNESOL)
                 distance_fenetre = st.number_input("Distance entre le tournesol et la fenêtre la plus proche [cm]", step=1)
-                heure_lum_art = st.number_input("Durée moyenne d'exposition à la lumière artificielle [h]", step=0.5)
+                heure_lum_art = st.number_input("Durée moyenne d'exposition à la lumière artificielle [h]", step=0.5,
+                                                min_value=0.0, max_value=18.0)
                 position = st.text_input("Coordonnées GPS (extraite via clic-droit sur Google Maps)",
                                          placeholder="50.6662847889796, 4.620254738686959")
 
             with col2:
                 orientation = st.selectbox("Orientation de la fenêtre la plus proche *", ["Nord", "Sud", "Est", "Ouest"], index=None)
-                heure_lum_nat = st.number_input("Durée moyenne d'exposition à la lumière naturelle [h]", step=0.5)
+                heure_lum_nat = st.number_input("Durée moyenne d'exposition à la lumière naturelle [h]", step=0.5,
+                                                min_value=0.0, max_value=18.0)
                 temp = st.selectbox("Température moyenne dans la pièce [°C]",
                                     ["Chaude (> 21 °C)", "Moyenne (19-21 °C)", "Fraîche (17-19 °C)", "Froide (< 17 °C)"],
                                     index=None,
