@@ -557,6 +557,8 @@ with tab_tournesol:
                                          help=HELP_TEXT_ID_TOURNESOL)
                 date_mes = st.date_input("Date de l'observation *", format="DD/MM/YYYY", value=datetime.now(TIME_ZONE))
 
+                tournesol_mort = st.checkbox("Mon tournesol est mort cette semaine et je suis très triste 😢")
+
             with col2:
                 stade_liste = ["A2",
                                "B2", "B3", "B4", "B5", "B6", "B7", "B8", "B9", "B10", "B11", "B12", "B13",
@@ -575,6 +577,7 @@ with tab_tournesol:
                         "date": date_mes.strftime("%d/%m/%Y"),
                         "hauteur": hauteur,
                         "stade": stade,
+                        "mort": tournesol_mort,
                     }
 
                     save_data(OBS_PLANTE, new_row)
