@@ -209,7 +209,7 @@ with tab_photo:
     st.header(HEADER_TP_PHOTOSYNTHESE)
 
     type_fichier = st.selectbox("Choisir l'appareil ou le type type de mesure :",
-                                ["IRGA", "Poromètre", "Croissance", "Fluorimètre"])
+                                ["IRGA", "Poromètre", "Croissance", "Fluorimètre", "Chlorophyllomètre"])
     
     st.divider()
 
@@ -391,6 +391,40 @@ with tab_photo:
                     save_data("url_fluo", new_row)
 
         show_data("url_fluo", "fluorimètre")
+    elif type_fichier == "Chlorophyllomètre":
+        st.write("### Chlorophyllomètre : ajouter une mesure")
+
+        with st.form("form_chloro", clear_on_submit=True):
+            c1, c2 = st.columns(2)
+
+            with c1:
+                date_v = st.date_input("Date de la mesure *", format="DD/MM/YYYY", value=datetime.now(TIME_ZONE))
+                heure_v = st.time_input("Heure de la mesure *", value=datetime.now(TIME_ZONE))
+                id_p = st.number_input("ID plante (1-20) *", 1, 20, value=None, step=1)
+                trait = st.selectbox("Traitement *", ["Lumière", "Ombre"], index=None)
+
+            with c2:
+                appareil = st.selectbox("Appareil *", ["Neuf", "Vieux"], index=None)
+                CCI = st.number_input("Chlorophyll Content Index (CCI) *", format="%.3f", value=None, step=0.001)
+                PAR = st.number_input("PAR [µmol/m²/s] *", format="%.3f", value=None, step=0.001)
+
+            if st.form_submit_button("Enregistrer"):
+                if any(v is None for v in [id_p, trait, appareil, CCI, PAR]):
+                    st.error(MANDATORY_FIELDS_MISSING)
+                else:
+                    new_row = {
+                        "date": date_v.strftime("%d/%m/%Y"),
+                        "heure": heure_v.strftime("%H:%M"),
+                        "plante_ID": id_p,
+                        "traitement": trait,
+                        "appareil": appareil,
+                        "CCI": CCI,
+                        "PAR": PAR,
+                    }
+
+                    save_data("url_chloro", new_row)
+
+        show_data("url_chloro", "chlorophyllomètre")
 
 with tab_tournesol:
     st.header(HEADER_TP_TOURNESOL)
