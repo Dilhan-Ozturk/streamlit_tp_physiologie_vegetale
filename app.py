@@ -284,11 +284,10 @@ with tab_photo:
                 id_p = st.number_input("ID plante (1-20) *", 1, 20, value=None, step=1)
 
             with c2:
-                gs = st.number_input("Conductance stomatique (µmol/m².s) *", value=None, step=0.1,
+                gs = st.number_input("Conductance stomatique [µmol/m².s] *", value=None, step=0.1,
                                      min_value=0.0, max_value=1200.0)
-                par = st.number_input("PAR (µmol/m².s) *", value=None, step=0.01,
+                par = st.number_input("PAR (Qamb) [mol/m².s] *", value=None, step=0.01,
                                       min_value=0.0, max_value=2500.0)
-                app = st.selectbox("Appareil *", ["Lent", "Rapide"], index=None)
                 trait = st.selectbox("Traitement *", ["Lumière", "Ombre"], index=None)
             
             remarque = st.text_area("Remarque", key="rem_poro")
@@ -364,9 +363,6 @@ with tab_photo:
 
             with c2:
                 y_ii = st.number_input("Y_II *", format="%.3f", value=None, step=0.001)
-                fv_fm = st.number_input("Fv/Fm", format="%.3f", value=None, step=0.001)
-                y_npq = st.number_input("Y(NPQ)", format="%.3f", value=None, step=0.001)
-                y_no = st.number_input("Y(NO)", format="%.3f", value=None, step=0.001)
                 a_par = st.number_input("Actinic PAR", value=None, step=1)
             
             remarque = st.text_area("Remarque", key="rem_fluo")
@@ -381,9 +377,6 @@ with tab_photo:
                         "plante_ID": id_p,
                         "traitement": trait,
                         "Y_II": y_ii,
-                        "Fv/Fm": fv_fm,
-                        "Y(NPQ)": y_npq,
-                        "Y(NO)": y_no,
                         "act_PAR": a_par,
                         "remarque": remarque
                     }
