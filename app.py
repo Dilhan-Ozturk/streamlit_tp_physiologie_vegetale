@@ -293,7 +293,7 @@ with tab_photo:
             remarque = st.text_area("Remarque", key="rem_poro")
 
             if st.form_submit_button("Enregistrer"):
-                if any(v is None for v in [id_p, gs, par, app, trait]):
+                if any(v is None for v in [id_p, gs, par, trait]):
                     st.error(MANDATORY_FIELDS_MISSING)
                 else:
                     new_row = {
@@ -302,7 +302,6 @@ with tab_photo:
                         "plante_ID": id_p,
                         "cond": gs,
                         "PAR": par,
-                        "type_appareil": app,
                         "traitement": trait,
                         "remarque": remarque
                     }
