@@ -284,9 +284,9 @@ with tab_photo:
                 id_p = st.number_input("ID plante (1-20) *", 1, 20, value=None, step=1)
 
             with c2:
-                gs = st.number_input("Conductance stomatique [µmol/m².s] *", value=None, step=0.1,
+                gs = st.number_input("Conductance stomatique [mol/m².s] *", value=None, step=0.1,
                                      min_value=0.0, max_value=1200.0)
-                par = st.number_input("PAR (Qamb) [mol/m².s] *", value=None, step=0.01,
+                par = st.number_input("PAR (Qamb) [µmol/m².s] *", value=None, step=0.01,
                                       min_value=0.0, max_value=2500.0)
                 trait = st.selectbox("Traitement *", ["Lumière", "Ombre"], index=None)
             
