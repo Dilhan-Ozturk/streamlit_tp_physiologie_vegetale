@@ -224,6 +224,7 @@ with tab_photo:
                 date_v = st.date_input("Date de la mesure *", format="DD/MM/YYYY", value=datetime.now(TIME_ZONE))
                 heure_v = st.time_input("Heure de la mesure*", value=datetime.now(TIME_ZONE))
                 id_p = st.number_input("ID plante (1-20) *", 1, 20, value=None, step=1)
+                rang_f = st.number_input("Rang de la feuille *", 1, 20, value=None, step=1)
 
             with c2:
                 c_in = st.number_input("CO2 in (ppm) *", value=None, step=1)
@@ -245,7 +246,7 @@ with tab_photo:
             remarque = st.text_area("Remarque", key="rem_irga")
 
             if st.form_submit_button("Enregistrer"):
-                check_list = [id_p, c_in, c_out, h_in, h_out, qleaf, pres, temp, flux, a_val, e_val, trait]
+                check_list = [id_p, c_in, c_out, h_in, h_out, qleaf, pres, temp, flux, a_val, e_val, trait, rang_f]
                 if any(v is None for v in check_list):
                     st.error(MANDATORY_FIELDS_MISSING)
                 else:
@@ -253,6 +254,7 @@ with tab_photo:
                         "date": date_v.strftime("%d/%m/%Y"),
                         "heure": heure_v.strftime("%H:%M"),
                         "plante_ID": id_p,
+                        "rang_f": rang_f,
                         "CO2_in": c_in,
                         "CO2_out": c_out,
                         "H2O_in": h_in,
@@ -282,6 +284,7 @@ with tab_photo:
                 date_v = st.date_input("Date de la mesure *", format="DD/MM/YYYY", value=datetime.now(TIME_ZONE))
                 heure_v = st.time_input("Heure de la mesure *", value=datetime.now(TIME_ZONE))
                 id_p = st.number_input("ID plante (1-20) *", 1, 20, value=None, step=1)
+                rang_f = st.number_input("Rang de la feuille *", 1, 20, value=None, step=1)
 
             with c2:
                 gs = st.number_input("Conductance stomatique [mol/m².s] *", value=None, step=0.1,
@@ -293,13 +296,14 @@ with tab_photo:
             remarque = st.text_area("Remarque", key="rem_poro")
 
             if st.form_submit_button("Enregistrer"):
-                if any(v is None for v in [id_p, gs, par, trait]):
+                if any(v is None for v in [id_p, gs, par, trait, rang_f]):
                     st.error(MANDATORY_FIELDS_MISSING)
                 else:
                     new_row = {
                         "date": date_v.strftime("%d/%m/%Y"),
                         "heure": heure_v.strftime("%H:%M"),
                         "plante_ID": id_p,
+                        "rang_f": rang_f,
                         "cond": gs,
                         "PAR": par,
                         "traitement": trait,
@@ -361,19 +365,21 @@ with tab_photo:
                 trait = st.selectbox("Traitement *", ["Lumière", "Ombre"], index=None)
 
             with c2:
+                rang_f = st.number_input("Rang de la feuille *", 1, 20, value=None, step=1)
                 y_ii = st.number_input("Y_II *", format="%.3f", value=None, step=0.001)
                 a_par = st.number_input("Actinic PAR", value=None, step=1)
             
             remarque = st.text_area("Remarque", key="rem_fluo")
 
             if st.form_submit_button("Enregistrer"):
-                if any(v is None for v in [id_p, trait, y_ii]):
+                if any(v is None for v in [id_p, trait, y_ii, rang_f]):
                     st.error(MANDATORY_FIELDS_MISSING)
                 else:
                     new_row = {
                         "date": date_v.strftime("%d/%m/%Y"),
                         "heure": heure_v.strftime("%H:%M"),
                         "plante_ID": id_p,
+                        "rang_f": rang_f,
                         "traitement": trait,
                         "Y_II": y_ii,
                         "act_PAR": a_par,
@@ -396,18 +402,20 @@ with tab_photo:
                 trait = st.selectbox("Traitement *", ["Lumière", "Ombre"], index=None)
 
             with c2:
+                rang_f = st.number_input("Rang de la feuille *", 1, 20, value=None, step=1)
                 appareil = st.selectbox("Appareil *", ["Neuf", "Vieux"], index=None)
                 CCI = st.number_input("Chlorophyll Content Index (CCI) *", format="%.3f", value=None, step=0.001)
                 PAR = st.number_input("PAR [µmol/m²/s] *", format="%.3f", value=None, step=0.001)
 
             if st.form_submit_button("Enregistrer"):
-                if any(v is None for v in [id_p, trait, appareil, CCI, PAR]):
+                if any(v is None for v in [id_p, trait, appareil, CCI, PAR, rang_f]):
                     st.error(MANDATORY_FIELDS_MISSING)
                 else:
                     new_row = {
                         "date": date_v.strftime("%d/%m/%Y"),
                         "heure": heure_v.strftime("%H:%M"),
                         "plante_ID": id_p,
+                        "rang_f": rang_f,
                         "traitement": trait,
                         "appareil": appareil,
                         "CCI": CCI,
