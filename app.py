@@ -24,12 +24,33 @@ def get_df_from_url(url_key):
         sks = st.secrets["connections"]["gsheets"]
         creds = Credentials.from_service_account_info(sks, scopes=["https://www.googleapis.com/auth/spreadsheets"])
         gc = gspread.authorize(creds)
-        url = sks.get(url_key, url_key) 
-        data = gc.open_by_url(url).sheet1.get_all_records()
-        return pd.DataFrame(data)
+        url = sks.get(url_key, url_key)
+        
+        # Use get_all_values() instead of get_all_records() to get raw strings
+        worksheet = gc.open_by_url(url).sheet1
+        data = worksheet.get_all_values()
+        
+        if not data:
+            return pd.DataFrame()
+        
+        headers = data[0]
+        rows = data[1:]
+        df = pd.DataFrame(rows, columns=headers)
+        
+        # Fix: replace comma decimal separator with dot and convert to numeric where possible
+        for col in df.columns:
+            converted = df[col].str.replace(',', '.', regex=False)
+            try:
+                df[col] = pd.to_numeric(converted)
+            except (ValueError, AttributeError):
+                # Keep as string if conversion fails
+                df[col] = df[col]
+        
+        return df
     except Exception as e:
         st.error(f"Erreur de lecture ({url_key}): {e}")
         return pd.DataFrame()
+
 
 # --- FONCTION : SAUVEGARDE ---
 def save_data(spreadsheet_key, new_row_dict):
