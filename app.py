@@ -596,7 +596,8 @@ with tab_tournesol:
             with col2:
                 stade_liste = ["A2",
                                "B2", "B3", "B4", "B5", "B6", "B7", "B8", "B9", "B10", "B11", "B12", "B13",
-                               "E1", "E2", "E3"]
+                               "E1", "E2", "E3", "E4",
+                               "F1", "F3.2"]
 
                 hauteur = st.number_input("Hauteur (du pot jusqu'au bourgeon terminal) * [cm]", format="%.1f")
                 stade = st.selectbox("Stade de la plante (voir descriptif des stades sur Moodle)", stade_liste, index=None)
