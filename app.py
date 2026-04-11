@@ -16,6 +16,8 @@ PIECE = 'piece'
 OBS_PLANTE = 'obs_plante'
 OBS_FEUILLE = 'obs_feuille'
 
+PEER_REVIEW = 'peer_review'
+
 # --- FONCTION : LECTURE (AVEC CACHE) ---
 @st.cache_data(ttl=60)
 def get_df_from_url(url_key):
@@ -166,12 +168,14 @@ st.title(TITLE)
 HEADER_TP_EAU = "TP1 : l'eau"
 HEADER_TP_PHOTOSYNTHESE = "TP5 : la photosynthèse"
 HEADER_TP_TOURNESOL = "Votre tournesol"
+HEADER_PEER_REVIEW = "TP7 : évaluation par les pairs du protocole"
 
 MANDATORY_FIELDS_MISSING = "Veuillez remplir tous les champs obligatoires marqués d'un *"
 
-tab_eau, tab_photo, tab_tournesol = st.tabs([HEADER_TP_EAU,
-                                             HEADER_TP_PHOTOSYNTHESE,
-                                             HEADER_TP_TOURNESOL])
+tab_eau, tab_photo, tab_tournesol, tab_peer_review = st.tabs([HEADER_TP_EAU,
+                                                              HEADER_TP_PHOTOSYNTHESE,
+                                                              HEADER_TP_TOURNESOL,
+                                                              HEADER_PEER_REVIEW])
 
 # =================================================================
 # ONGLET 1 : SÉANCE EAU
@@ -680,3 +684,348 @@ with tab_tournesol:
                     save_data(OBS_FEUILLE, new_row)
 
         show_data(OBS_FEUILLE, "observations des feuilles")
+
+# Onglet n°4 : peer-review des protocoles
+with tab_peer_review:
+    st.header(HEADER_PEER_REVIEW)
+
+    levels = ["Insuffisant", "Suffisant", "Excellent"]
+
+    FORM_REVIEW = ["Encoder les résultats de votre évaluation d'un protocole d'une autre équipe",
+                   "Consulter les évaluations de votre protocole"]
+
+    form_selector = st.selectbox("Que voulez-vous faire ?", FORM_REVIEW)
+
+    st.write("---")
+
+    if form_selector == FORM_REVIEW[0]:
+        st.write("### ✏️ " + FORM_REVIEW[0])
+
+        st.write("En cas de doute sur l'évaluation, consultez la grille de critère.")
+
+        st.write("Tous les champs du formulaire sont obligatoires à l'exception des commentaires.")
+
+        st.write("**Chaque évaluation ne doit être complétée que par un seul membre de l'équipe.**")
+
+        with st.form(PEER_REVIEW):
+
+            left, right = st.columns(2)
+
+            with left:
+                equipe = st.selectbox("Numéro de l'équipe évaluée",
+                                      list(range(1, 90)),
+                                      index=None)
+
+            st.write("#### 🎯 Objectif de l'expérience")
+
+            left, right = st.columns(2)
+
+            with left:
+                objectif = st.selectbox("Clarté de l'objectif *",
+                                        levels, index=None)
+
+            with right:
+                coherence = st.selectbox("Cohérence entre le protocole et l'objectif de l'expérience *",
+                                         levels, index=None)
+
+            comment_objectif = st.text_area("Commentaire(s) :", key='comment_objectif')
+
+            st.write("#### 📰 Vocabulaires et ressources")
+
+            left, right = st.columns(2)
+
+            with left:
+                sources = st.selectbox("Sources scientifiques *",
+                                       levels, index=None)
+
+            with right:
+                vocabulaire = st.selectbox("Vocabulaire scientifique *",
+                                           levels, index=None)
+
+            comment_sources = st.text_area("Commentaire(s) :", key='comment_sources')
+
+            st.write("#### 🧪 Traitements et conditions expérimentales")
+
+            left, right = st.columns(2)
+
+            with left:
+                facteurs = st.selectbox("Facteurs et niveaux testés *",
+                                        levels, index=None)
+
+                conditions = st.selectbox("Conditions expérimentales (facteurs non-testés) *",
+                                          levels, index=None)
+
+            with right:
+                repetitions = st.selectbox("Nombre de répétitions *",
+                                           levels, index=None)
+
+                temoins = st.selectbox("Témoins *",
+                                       levels, index=None)
+
+            comment_traitement = st.text_area("Commentaire(s) :", key='comment_traitement')
+
+            st.write("#### 📏 Variables mesurées")
+
+            left, right = st.columns(2)
+
+            with left:
+                precision_methodes = st.selectbox("Précisions des méthodes de mesure *",
+                                                  levels, index=None)
+
+                homogeneite_methodes = st.selectbox("Homogénéité des méthodes de mesure ",
+                                                    levels, index=None)
+
+            with right:
+                danger_methodes = st.selectbox("Danger des méthodes de mesure pour les plante *s",
+                                               levels, index=None)
+
+            comment_mesures = st.text_area("Commentaire(s) :", key='comment_mesures')
+
+            st.write("#### 📈 Gestions des données")
+
+            left, right = st.columns(2)
+
+            with left:
+                stockage = st.selectbox("Stockage des données *",
+                                        levels, index=None)
+
+            with right:
+                analyse = st.selectbox("Analyse des données *",
+                                       levels, index=None)
+
+            comment_donnees = st.text_area("Commentaire(s) :", key='comment_donnees')
+
+            # TODO: would be more coherent to separate in two sections "Forme" et "Logistique"
+            st.write("#### 👓 Forme du protocole")
+
+            left, right = st.columns(2)
+
+            with left:
+                forme = st.selectbox("Forme du texte *",
+                                     levels, index=None)
+
+                orthographe = st.selectbox("Orthographe *",
+                                           levels, index=None)
+
+            with right:
+                schemas = st.selectbox("Présence de schéma(s)",
+                                       levels, index=None)
+
+            comment_forme = st.text_area("Commentaire(s) :", key='comment_forme')
+
+            st.write("#### 🧑‍🏭 Logistique")
+
+            left, right = st.columns(2)
+
+            with left:
+                materiel = st.selectbox("Liste de matériel *",
+                                        levels, index=None)
+
+                planning = st.selectbox("Planning de l'expérience *",
+                                        levels, index=None)
+
+            with right:
+                faisabilite = st.selectbox("Faisabilité du protocole *",
+                                           levels, index=None)
+
+            comment_logistique = st.text_area("Commentaire(s) :", key='comment_logistique')
+
+            if st.form_submit_button("Enregistrer"):
+                mandatory_fields = [equipe,
+                                    objectif, coherence,
+                                    sources, vocabulaire,
+                                    facteurs, conditions, repetitions, temoins,
+                                    precision_methodes, homogeneite_methodes, danger_methodes,
+                                    stockage, analyse,
+                                    forme, orthographe, schemas, materiel, planning, faisabilite]
+
+                if any(field is None for field in mandatory_fields):
+                    st.error(MANDATORY_FIELDS_MISSING)
+                else:
+                    new_row = {
+                        "equipe": str(equipe),
+                        "objectif": objectif,
+                        "coherence": coherence,
+                        "sources": sources,
+                        "vocabulaire": vocabulaire,
+                        "facteurs": facteurs,
+                        "conditions": conditions,
+                        "repetitions": repetitions,
+                        "temoins": temoins,
+                        "precision_methodes": precision_methodes,
+                        "homogeneite_methodes": homogeneite_methodes,
+                        "danger_methodes": danger_methodes,
+                        "stockage": stockage,
+                        "analyse": analyse,
+                        "forme": forme,
+                        "orthographe": orthographe,
+                        "schemas": schemas,
+                        "materiel": materiel,
+                        "planning": planning,
+                        "faisabilite": faisabilite,
+                        "comment_objectif": comment_objectif,
+                        "comment_sources": comment_sources,
+                        "comment_traitement": comment_traitement,
+                        "comment_mesures": comment_mesures,
+                        "comment_donnees": comment_donnees,
+                        "comment_forme": comment_forme,
+                        "comment_logistique": comment_logistique,
+                    }
+
+                    save_data(PEER_REVIEW, new_row)
+
+        show_data(PEER_REVIEW, "Evaluation par les pairs des protocoles")
+    else:
+        st.write("### " + FORM_REVIEW[1])
+
+        left, right = st.columns(2)
+
+        with left:
+            equipe = st.selectbox("Indiquez le numéro de votre équipe",
+                                  list(range(1, 90)),
+                                  index=None)
+
+        peer_reviews = get_df_from_url('peer_review')
+
+        if equipe is not None:
+
+            peer_reviews = peer_reviews[peer_reviews['equipe'] == equipe]
+
+            def display_levels(column_name):
+                niveau = peer_reviews[column_name]
+
+                results = pd.DataFrame({
+                    "niveau": levels,
+                    "nombre": [len(niveau[niveau == level]) for level in levels],
+                })
+
+                st.bar_chart(results, x="niveau", y="nombre", sort=False,
+                             x_label="", width="content", height=250)
+
+            def display_comments(column_name):
+                comments = [c for c in peer_reviews[column_name] if c is not None and type(c) is not float and len(str(c)) > 0]
+
+                if len(comments) == 0:
+                    st.write("Aucun commentaire.")
+                else:
+                    for i, comment in enumerate(comments):
+                        st.write("###### Commentaire n°{0}".format(i+1))
+                        st.write(comment)
+
+            if len(peer_reviews) > 0:
+                st.write("Il y a **{0}** reviews pour l'équipe n° {1}.".format(len(peer_reviews), equipe))
+                st.write("Cliquez sur chaque section ci-dessous pour découvrir l'évaluation de vos pairs et leurs commentaires.")
+
+                with st.expander("🎯 Objectif de l'expérience"):
+                    st.write("##### Clarté de l'objectif")
+
+                    display_levels("objectif")
+
+                    st.write("##### Cohérence entre le protocole et l'objectif de l'expérience ")
+
+                    display_levels("coherence")
+
+                    st.write("##### Commentaire(s)")
+
+                    display_comments("comment_objectif")
+
+                with st.expander("📰 Vocabulaires et ressources"):
+                    st.write("##### Sources scientifiques")
+
+                    display_levels("sources")
+
+                    st.write("##### Vocabulaire")
+
+                    display_levels("vocabulaire")
+
+                    st.write("##### Commentaire(s)")
+
+                    display_comments("comment_sources")
+
+                with st.expander("🧪 Traitements et conditions expérimentales"):
+                    st.write("##### Facteurs et niveaux testés")
+
+                    display_levels("facteurs")
+
+                    st.write("##### Conditions expérimentales (facteurs non-testés)")
+
+                    display_levels("conditions")
+
+                    st.write("##### Nombre de répétitions")
+
+                    display_levels("repetitions")
+
+                    st.write("##### Témoins")
+
+                    display_levels("temoins")
+
+                    st.write("##### Commentaire(s)")
+
+                    display_comments("comment_traitement")
+
+                with st.expander("📏 Variables mesurées"):
+                    st.write("##### Précision des méthodes de mesure")
+
+                    display_levels("precisions_methodes")
+
+                    st.write("##### Homogénéité des méthodes de mesure")
+
+                    display_levels("homogeneite_methodes")
+
+                    st.write("##### Danger des méthodes de mesure pour la plante")
+
+                    display_levels("danger_methodes")
+
+                    st.write("##### Commentaire(s)")
+
+                    display_comments("comment_mesures")
+
+                with st.expander("📈 Gestions des données"):
+                    st.write("##### Stockage des données")
+
+                    display_levels("stockage")
+
+                    st.write("##### Analyse des données")
+
+                    display_levels("analyse")
+
+                    st.write("##### Commentaire(s)")
+
+                    display_comments("comment_donnees")
+
+                with st.expander("👓 Forme du protocole"):
+                    st.write("##### Forme du texte")
+
+                    display_levels("forme")
+
+                    st.write("##### Orthographe")
+
+                    display_levels("orthographe")
+
+                    st.write("##### Schémas")
+
+                    display_levels("schemas")
+
+                    st.write("##### Commentaire(s)")
+
+                    display_comments("comment_forme")
+
+                with st.expander("‍🧑‍🏭 Logistique"):
+                    st.write("##### Matériel")
+
+                    display_levels("materiel")
+
+                    st.write("##### Planning de l'expérience")
+
+                    display_levels("planning")
+
+                    st.write("##### Faisabilité du protocole")
+
+                    display_levels("faisabilite")
+
+                    st.write("##### Commentaire(s)")
+
+                    display_comments("comment_logistique")
+            else:
+                st.write("Il n'y a **pas encore** de review pour votre équipe 🙁. Revenez plus tard !")
+
