@@ -900,7 +900,7 @@ with tab_peer_review:
                 })
 
                 st.bar_chart(results, x="niveau", y="nombre", sort=False,
-                             x_label="", width="content", height=250)
+                             x_label="", height=250)
 
             def display_comments(column_name):
                 comments = [c for c in peer_reviews[column_name] if c is not None and type(c) is not float and len(str(c)) > 0]
