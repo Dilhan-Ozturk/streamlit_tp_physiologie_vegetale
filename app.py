@@ -888,7 +888,6 @@ with tab_peer_review:
         peer_reviews = get_df_from_url('peer_review')
 
         if equipe is not None:
-
             peer_reviews = peer_reviews[peer_reviews['equipe'] == equipe]
 
             def display_levels(column_name):
@@ -914,7 +913,18 @@ with tab_peer_review:
 
             if len(peer_reviews) > 0:
                 st.write("Il y a **{0}** reviews pour l'équipe n° {1}.".format(len(peer_reviews), equipe))
-                st.write("Cliquez sur chaque section ci-dessous pour découvrir l'évaluation de vos pairs et leurs commentaires.")
+
+                global_results = pd.DataFrame({
+                    "niveau": levels,
+                    "nombre": [sum(sum(peer_reviews.eq(level).values)) for level in levels]
+                })
+
+                st.write("#### Résultats globaux")
+
+                st.bar_chart(global_results, x="niveau", y="nombre", sort=False,
+                             x_label="", height=250)
+
+                st.write("Cliquez sur chaque section ci-dessous pour découvrir le détail de l'évaluation de vos pairs et leurs commentaires.")
 
                 with st.expander("🎯 Objectif de l'expérience"):
                     st.write("##### Clarté de l'objectif")
