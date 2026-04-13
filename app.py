@@ -712,7 +712,10 @@ with tab_peer_review:
             left, right = st.columns(2)
 
             with left:
-                equipe = st.selectbox("Numéro de l'équipe évaluée",
+                reviewer = st.selectbox("Numéro de l'équipe **évaluatrice** (votre numéro d'équipe donc) *",
+                                        list(range(1, 90)),
+                                        index=None)
+                equipe = st.selectbox("Numéro de l'équipe **évaluée** *",
                                       list(range(1, 90)),
                                       index=None)
 
@@ -772,11 +775,11 @@ with tab_peer_review:
                 precision_methodes = st.selectbox("Précisions des méthodes de mesure *",
                                                   levels, index=None)
 
-                homogeneite_methodes = st.selectbox("Homogénéité des méthodes de mesure ",
+                homogeneite_methodes = st.selectbox("Homogénéité des méthodes de mesure *",
                                                     levels, index=None)
 
             with right:
-                danger_methodes = st.selectbox("Danger des méthodes de mesure pour les plante *s",
+                danger_methodes = st.selectbox("Danger des méthodes de mesure pour les plantes *",
                                                levels, index=None)
 
             comment_mesures = st.text_area("Commentaire(s) :", key='comment_mesures')
@@ -808,7 +811,7 @@ with tab_peer_review:
                                            levels, index=None)
 
             with right:
-                schemas = st.selectbox("Présence de schéma(s)",
+                schemas = st.selectbox("Présence de schéma(s) *",
                                        levels, index=None)
 
             comment_forme = st.text_area("Commentaire(s) :", key='comment_forme')
@@ -831,7 +834,7 @@ with tab_peer_review:
             comment_logistique = st.text_area("Commentaire(s) :", key='comment_logistique')
 
             if st.form_submit_button("Enregistrer"):
-                mandatory_fields = [equipe,
+                mandatory_fields = [reviewer, equipe,
                                     objectif, coherence,
                                     sources, vocabulaire,
                                     facteurs, conditions, repetitions, temoins,
@@ -843,6 +846,7 @@ with tab_peer_review:
                     st.error(MANDATORY_FIELDS_MISSING)
                 else:
                     new_row = {
+                        "reviewer": str(reviewer),
                         "equipe": str(equipe),
                         "objectif": objectif,
                         "coherence": coherence,
